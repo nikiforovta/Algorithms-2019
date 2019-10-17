@@ -4,6 +4,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 abstract class AbstractAlgorithmsTests {
 
@@ -66,6 +67,9 @@ abstract class AbstractAlgorithmsTests {
         assertEquals(50000000, josephTask(50000000, 1))
         assertEquals(3, josephTask(8, 5))
         assertEquals(28, josephTask(40, 3))
+        assertEquals(0, josephTask(0, 3))
+        assertEquals(0, josephTask(40, 0))
+        assertEquals(321651845, josephTask(1234567746, 2))
         var menNumber = 2
         for (i in 1..20) {
             assertEquals(1, josephTask(menNumber, 2))
@@ -77,6 +81,18 @@ abstract class AbstractAlgorithmsTests {
         assertEquals("", longestCommonSubstring("мой мир", "я"))
         assertEquals("зд", longestCommonSubstring("здравствуй мир", "мы здесь"))
         assertEquals("СЕРВАТОР", longestCommonSubstring("ОБСЕРВАТОРИЯ", "КОНСЕРВАТОРЫ"))
+        assertEquals(
+            "гидро",
+            longestCommonSubstring(
+                "тетрагидропиранилциклопентилтетрагидропиридопиридиновые",
+                "гидразинокарбонилметилбромфенилдигидробенздиазепин"
+            )
+        )
+        assertEquals(
+            "qsdcvefhytjyttewf",
+            longestCommonSubstring("qsdcvefhytjyttewf", "weqghrtukjqsdcvefhytjyttewfgddfrt3yrjgf")
+        )
+        assertEquals("", longestCommonSubstring("сЛоВа", "СлОвА"))
         assertEquals(
             "огда ", longestCommonSubstring(
                 """
@@ -123,12 +139,16 @@ abstract class AbstractAlgorithmsTests {
     }
 
     fun calcPrimesNumber(calcPrimesNumber: (Int) -> Int) {
+        assertEquals(0, calcPrimesNumber(Integer.MIN_VALUE))
         assertEquals(0, calcPrimesNumber(-1))
         assertEquals(0, calcPrimesNumber(1))
         assertEquals(1, calcPrimesNumber(2))
         assertEquals(2, calcPrimesNumber(4))
         assertEquals(4, calcPrimesNumber(10))
         assertEquals(8, calcPrimesNumber(20))
+        assertEquals(15, calcPrimesNumber(50))
+        assertEquals(95, calcPrimesNumber(500))
+        assertEquals(666, calcPrimesNumber(4980))
         assertEquals(1000, calcPrimesNumber(7920))
         assertEquals(1229, calcPrimesNumber(10000))
         assertEquals(2262, calcPrimesNumber(20000))
@@ -170,5 +190,31 @@ abstract class AbstractAlgorithmsTests {
                 )
             )
         )
+        try {
+            baldaSearcher("input/balda_in4.txt", setOf("ДА", "КАКАЯ", "РАЗНИЦА"))
+        } catch (e: Exception) {
+            assertTrue(true)
+        }
+        try {
+            baldaSearcher("input/balda_in5.txt", setOf("ДА", "КАКАЯ", "РАЗНИЦА"))
+        } catch (e: Exception) {
+            assertTrue(true)
+        }
+        try {
+            baldaSearcher("input/balda_in6.txt", setOf("ДА", "КАКАЯ", "РАЗНИЦА"))
+        } catch (e: Exception) {
+            assertTrue(true)
+        }
+        try {
+            baldaSearcher("input/balda_in7.txt", setOf("а", "слова", "плохие"))
+        } catch (e: Exception) {
+            assertTrue(true)
+        }
+        try {
+            baldaSearcher("input/empty.txt", setOf("KOT", "O", "ED"))
+        } catch (e: Exception) {
+            assertTrue(true)
+        }
+
     }
 }

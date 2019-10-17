@@ -1,6 +1,10 @@
 package lesson1;
 
+import javafx.util.Pair;
 import kotlin.NotImplementedError;
+
+import java.io.*;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -34,8 +38,43 @@ public class JavaTasks {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public void sortTimes(String inputName, String outputName) {
-        throw new NotImplementedError();
+
+    /**
+     * Time Complexity  O(n)
+     * Resource Complexity O(n)
+     */
+    static public void sortTimes(String inputName, String outputName) throws Exception {
+        ArrayList<Pair<Integer, String>> toSort = new ArrayList<>();
+        final int hourSec = 3600;
+        final int minSec = 60;
+        try (BufferedReader inp = new BufferedReader(new FileReader(new File(inputName)))) {
+            String line;
+            while ((line = inp.readLine()) != null) {
+                if (!line.matches("(([0-9]{2}:[0-9]{2}:[0-9]{2}) (AM|PM))")) {
+                    throw new IllegalArgumentException();
+                }
+                String[] time = line.split("[: ]");
+
+                int h = Integer.parseInt(time[0]);
+                int m = Integer.parseInt(time[1]);
+                int s = Integer.parseInt(time[2]);
+                if (h > 12 || h < 1 || m > 59 || m < 0 || s > 59 || s < 0) {
+                    throw new IllegalArgumentException();
+                }
+                int seconds = Integer.parseInt(time[2]) + minSec * Integer.parseInt(time[1]);
+                if (time[3].equals("AM")) seconds += (Integer.parseInt(time[0]) % 12) * hourSec;
+                else seconds += (Integer.parseInt(time[0]) % 12 + 12) * hourSec;
+                toSort.add(new Pair<>(seconds, line));
+            }
+        }
+        toSort.sort(Comparator.comparing(Pair::getKey));
+
+        FileWriter writer = new FileWriter(outputName, true);
+        for (Pair<Integer, String> time : toSort) {
+            String out = time.getValue();
+            writer.write(out + System.getProperty("line.separator"));
+        }
+        writer.close();
     }
 
     /**
@@ -64,8 +103,59 @@ public class JavaTasks {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public void sortAddresses(String inputName, String outputName) {
-        throw new NotImplementedError();
+
+    /**
+     * Time Complexity  O(n)
+     * Resource Complexity O(n)
+     */
+    static public void sortAddresses(String inputName, String outputName) throws Exception {
+        HashMap<String, ArrayList<String>> toSort = new HashMap<>();
+        try (BufferedReader inp = new BufferedReader(new FileReader(new File(inputName)))) {
+            String line;
+
+            while ((line = inp.readLine()) != null) {
+                String[] info = line.split(" - ");
+
+                if (info[1].split(" ").length != 2) {
+                    throw new IllegalArgumentException();
+                }
+                if (toSort.containsKey(info[1])) {
+                    toSort.get(info[1]).add(info[0]);
+                } else {
+                    toSort.put(info[1], new ArrayList<>(Collections.singletonList(info[0])));
+                }
+            }
+        }
+
+        FileWriter writer = new FileWriter(outputName);
+        toSort.entrySet().stream().sorted(Map.Entry.comparingByKey(new AddressSortingComparator())).forEachOrdered(e -> {
+            StringBuilder out = new StringBuilder();
+            out.append(e.getKey()).append(" - ");
+            ArrayList<String> people = e.getValue();
+            Collections.sort(people);
+            for (String man : people) {
+                out.append(man);
+                if (!(people.indexOf(man) == people.size() - 1)) {
+                    out.append(", ");
+                }
+            }
+            try {
+                writer.write(out + System.getProperty("line.separator"));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        writer.close();
+    }
+
+    static class AddressSortingComparator implements Comparator<String> {
+        @Override
+        public int compare(String addr1, String addr2) {
+            int strCompare = addr1.split(" ")[0].compareTo(addr2.split(" ")[0]);
+            int numCompare = Integer.compare(Integer.parseInt(addr1.split(" ")[1]), Integer.parseInt(addr2.split(" ")[1]));
+            if (strCompare == 0) return numCompare > 0 ? 1 : -1;
+            else return strCompare;
+        }
     }
 
     /**
@@ -98,8 +188,38 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    static public void sortTemperatures(String inputName, String outputName) {
-        throw new NotImplementedError();
+
+    /**
+     * Time complexity  O(n)
+     * Resource complexity  O(1)
+     */
+    static public void sortTemperatures(String inputName, String outputName) throws Exception {
+        int[] tempArray = new int[7732];
+        try (BufferedReader input = new BufferedReader(new FileReader(new File(inputName)))) {
+            String line;
+            while ((line = input.readLine()) != null) {
+                if (!line.matches("(-?\\d{1,3}\\.\\d)")) {
+                    throw new IllegalArgumentException();
+                }
+                double temperature = Double.parseDouble(line);
+                if (temperature > 500.0 || temperature < -273.0) {
+                    throw new IllegalArgumentException();
+                }
+                tempArray[(int) (temperature * 10 + 2730)]++;
+            }
+        }
+        FileWriter writer = new FileWriter(outputName);
+        for (int i = 0; i < tempArray.length; i++) {
+            double out = 0.0;
+            if (tempArray[i] > 0) {
+                out = (double) (i - 2730) / 10;
+            }
+            while (tempArray[i] > 0) {
+                writer.write(out + System.getProperty("line.separator"));
+                tempArray[i]--;
+            }
+        }
+        writer.close();
     }
 
     /**
@@ -149,7 +269,20 @@ public class JavaTasks {
      *
      * Результат: second = [1 3 4 9 9 13 15 20 23 28]
      */
+
+    /**
+     * Time Complexity  O(n)
+     * Resource Complexity  O(1)
+     */
     static <T extends Comparable<T>> void mergeArrays(T[] first, T[] second) {
-        throw new NotImplementedError();
+        System.arraycopy(first, 0, second, 0, first.length);
+        int li = 0, ri = first.length;
+        for (int i = 0; i < second.length; i++) {
+            if (li < first.length && (ri == second.length || first[li].compareTo(second[ri]) <= 0)) {
+                second[i] = first[li++];
+            } else {
+                second[i] = second[ri++];
+            }
+        }
     }
 }

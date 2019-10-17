@@ -3,6 +3,13 @@ package lesson2;
 import kotlin.NotImplementedError;
 import kotlin.Pair;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -84,8 +91,23 @@ public class JavaAlgorithms {
      * Общий комментарий: решение из Википедии для этой задачи принимается,
      * но приветствуется попытка решить её самостоятельно.
      */
+
+    /**
+     * Time Complexity  O(n)
+     * Resource Complexity O(1)
+     */
     static public int josephTask(int menNumber, int choiceInterval) {
-        throw new NotImplementedError();
+        if (menNumber <= 0 || choiceInterval <= 0) {
+            return 0;
+        }
+        if (choiceInterval == 1) {
+            return menNumber;
+        }
+        int g = 0;
+        for (int i = 0; i < menNumber; ++i) {
+            g = (g + choiceInterval) % (i + 1);
+        }
+        return g + 1;
     }
 
     /**
@@ -99,8 +121,29 @@ public class JavaAlgorithms {
      * Если имеется несколько самых длинных общих подстрок одной длины,
      * вернуть ту из них, которая встречается раньше в строке first.
      */
-    static public String longestCommonSubstring(String firs, String second) {
-        throw new NotImplementedError();
+
+    /**
+     * Time Complexity  O(mn), m - length of first, n - length of second
+     * Resource Complexity O(mn)
+     */
+    static public String longestCommonSubstring(String first, String second) {
+        int[][] overlap = new int[first.length() + 1][second.length() + 1];
+        int max = 0;
+        int k = 0;
+        for (int i = 0; i <= first.length(); i++) {
+            for (int j = 0; j <= second.length(); j++) {
+                if (i == 0 || j == 0 || first.charAt(i - 1) != second.charAt(j - 1)) {
+                    overlap[i][j] = 0;
+                } else {
+                    overlap[i][j] = overlap[i - 1][j - 1] + 1;
+                }
+                if (overlap[i][j] > max) {
+                    max = overlap[i][j];
+                    k = i;
+                }
+            }
+        }
+        return max != 0 ? first.substring(k - max, k) : "";
     }
 
     /**
@@ -113,8 +156,34 @@ public class JavaAlgorithms {
      * Справка: простым считается число, которое делится нацело только на 1 и на себя.
      * Единица простым числом не считается.
      */
+
+    /**
+     * Time Complexity  O(n^(3/2))
+     * Resource Complexity O(1)
+     */
     static public int calcPrimesNumber(int limit) {
-        throw new NotImplementedError();
+        int res = 0;
+        if (limit <= 1) {
+            return res;
+        }
+        for (int i = 1; i <= limit; i++) {
+            if (isPrime(i)) {
+                res++;
+            }
+        }
+        return res;
+    }
+
+    private static boolean isPrime(int n) {
+        if (n % 2 == 0) {
+            return false;
+        }
+        for (int i = 3; i * i <= n; i += 2) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -123,27 +192,101 @@ public class JavaAlgorithms {
      *
      * В файле с именем inputName задана матрица из букв в следующем формате
      * (отдельные буквы в ряду разделены пробелами):
-     *
+     * <p>
      * И Т Ы Н
      * К Р А Н
      * А К В А
-     *
+     * <p>
      * В аргументе words содержится множество слов для поиска, например,
      * ТРАВА, КРАН, АКВА, НАРТЫ, РАК.
-     *
+     * <p>
      * Попытаться найти каждое из слов в матрице букв, используя правила игры БАЛДА,
      * и вернуть множество найденных слов. В данном случае:
      * ТРАВА, КРАН, АКВА, НАРТЫ
-     *
+     * <p>
      * И т Ы Н     И т ы Н
      * К р а Н     К р а н
      * А К в а     А К В А
-     *
+     * <p>
      * Все слова и буквы -- русские или английские, прописные.
      * В файле буквы разделены пробелами, строки -- переносами строк.
      * Остальные символы ни в файле, ни в словах не допускаются.
      */
-    static public Set<String> baldaSearcher(String inputName, Set<String> words) {
-        throw new NotImplementedError();
+
+    /**
+     * Time Complexity  O(n * m * wordsSize)
+     * Resource Complexity  O(n * m * wordsSize)
+     */
+    static public Set<String> baldaSearcher(String inputName, Set<String> words) throws Exception {
+        int lines = Files.readAllLines(Paths.get(inputName), StandardCharsets.UTF_8).size();
+        char[][] boggle;
+        int i;
+        int j;
+        try (BufferedReader inp = new BufferedReader(new FileReader(new File(inputName)))) {
+            String line;
+            j = (line = inp.readLine()) != null ? line.split(" ").length : 0;
+            if (!line.matches("([A-ZА-ЯЁ] )+[A-ZА-ЯЁ]")) {
+                throw new IllegalArgumentException();
+            }
+            boggle = new char[lines][j];
+            String[] letters = line.split(" ");
+            i = 0;
+            for (int k = 0; k < j; k++) {
+                boggle[i][k] = letters[k].charAt(0);
+            }
+            i++;
+            while ((line = inp.readLine()) != null) {
+                if (!line.matches("([A-ZА-ЯЁ] )+[A-ZА-ЯЁ]")) {
+                    throw new IllegalArgumentException();
+                }
+                letters = line.split(" ");
+                for (int k = 0; k < j; k++) {
+                    boggle[i][k] = letters[k].charAt(0);
+                }
+                i++;
+            }
+        } catch (IndexOutOfBoundsException e) {
+            throw new Exception();
+        }
+        Set<String> result = new HashSet<>();
+        for (String word : words) {
+            if (!word.matches("[A-ZА-ЯЁ]+")) {
+                throw new IllegalArgumentException();
+            }
+            for (int k = 0; k < i; k++) {
+                for (int l = 0; l < j; l++) {
+                    if (boggle[k][l] == word.charAt(0)) {
+                        char[][] temp = new char[i][j];
+                        for (int x = 0; x < i; x++) {
+                            System.arraycopy(boggle[x], 0, temp[x], 0, j);
+                        }
+                        if (searchWord(temp, word, k, l, 0)) {
+                            result.add(word);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private static boolean searchWord(char[][] board, String word, int i, int j, int k) {
+        if (i < 0 || j < 0 || i >= board.length || j >= board[0].length || k > word.length() - 1) {
+            return false;
+        }
+        if (board[i][j] == word.charAt(k)) {
+            char temp = board[i][j];
+            board[i][j] = '0';
+            if (k == word.length() - 1) {
+                return true;
+            } else if (searchWord(board, word, i - 1, j, k + 1) || searchWord(board, word, i + 1, j, k + 1)
+                    || searchWord(board, word, i, j - 1, k + 1) || searchWord(board, word, i, j + 1, k + 1)) {
+                board[i][j] = temp;
+                return true;
+            }
+        } else {
+            return false;
+        }
+        return false;
     }
 }
