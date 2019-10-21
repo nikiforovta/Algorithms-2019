@@ -40,8 +40,8 @@ public class JavaTasks {
      */
 
     /**
-     * Time Complexity  O(n)
-     * Resource Complexity O(n)
+     * Time Complexity  O(n * log(n)) - сложность алгоритма сортировки
+     * Resource Complexity O(n) - так как необходимо создать ArrayList, количество элементов которого равно размеру входных данных
      */
     static public void sortTimes(String inputName, String outputName) throws Exception {
         ArrayList<Pair<Integer, String>> toSort = new ArrayList<>();
@@ -105,11 +105,12 @@ public class JavaTasks {
      */
 
     /**
-     * Time Complexity  O(n)
-     * Resource Complexity O(n)
+     * Time Complexity  O(n * log(n)) - сложность алгоритма сортировки
+     * Resource Complexity O(n) - - так как необходимо создать ArrayList,
+     * количество элементов которого равно размеру входных данных
      */
     static public void sortAddresses(String inputName, String outputName) throws Exception {
-        HashMap<String, ArrayList<String>> toSort = new HashMap<>();
+        HashMap<String, LinkedList<String>> toSort = new HashMap<>();
         try (BufferedReader inp = new BufferedReader(new FileReader(new File(inputName)))) {
             String line;
 
@@ -121,8 +122,9 @@ public class JavaTasks {
                 }
                 if (toSort.containsKey(info[1])) {
                     toSort.get(info[1]).add(info[0]);
+                    Collections.sort(toSort.get(info[1]));
                 } else {
-                    toSort.put(info[1], new ArrayList<>(Collections.singletonList(info[0])));
+                    toSort.put(info[1], new LinkedList<>(Collections.singletonList(info[0])));
                 }
             }
         }
@@ -131,11 +133,10 @@ public class JavaTasks {
         toSort.entrySet().stream().sorted(Map.Entry.comparingByKey(new AddressSortingComparator())).forEachOrdered(e -> {
             StringBuilder out = new StringBuilder();
             out.append(e.getKey()).append(" - ");
-            ArrayList<String> people = e.getValue();
-            Collections.sort(people);
+            ArrayList<String> people = new ArrayList<>(e.getValue());
             for (String man : people) {
                 out.append(man);
-                if (!(people.indexOf(man) == people.size() - 1)) {
+                if (!(people.get(people.size() - 1).equals(man))) {
                     out.append(", ");
                 }
             }
@@ -190,8 +191,8 @@ public class JavaTasks {
      */
 
     /**
-     * Time complexity  O(n)
-     * Resource complexity  O(1)
+     * Time complexity  O(n) - так как необходимо один раз пройтись по входным данным
+     * Resource complexity  O(1) - так как независимо от объёма входных данных создаётся массив фиксированного размера
      */
     static public void sortTemperatures(String inputName, String outputName) throws Exception {
         int[] tempArray = new int[7732];
@@ -271,8 +272,8 @@ public class JavaTasks {
      */
 
     /**
-     * Time Complexity  O(n)
-     * Resource Complexity  O(1)
+     * Time Complexity  O(n) - так как необходимо пройти по всей длине второго массива
+     * Resource Complexity  O(1) - так как не требуется создание дополнительных переменных
      */
     static <T extends Comparable<T>> void mergeArrays(T[] first, T[] second) {
         System.arraycopy(first, 0, second, 0, first.length);

@@ -93,8 +93,8 @@ public class JavaAlgorithms {
      */
 
     /**
-     * Time Complexity  O(n)
-     * Resource Complexity O(1)
+     * Time Complexity  O(n) - так как требуется пройти по menNumber 1 раз
+     * Resource Complexity O(1) - так как количество дополнительных переменных не зависит от объёма входных данных
      */
     static public int josephTask(int menNumber, int choiceInterval) {
         if (menNumber <= 0 || choiceInterval <= 0) {
@@ -123,8 +123,9 @@ public class JavaAlgorithms {
      */
 
     /**
-     * Time Complexity  O(mn), m - length of first, n - length of second
-     * Resource Complexity O(mn)
+     * Time Complexity  O(mn), m - length of first, n - length of second - так как мы проходим по всем символам
+     * входных слов вложенным циклом
+     * Resource Complexity O(mn) - так как размер матрицы перекрытий зависит от длины входных слов
      */
     static public String longestCommonSubstring(String first, String second) {
         int[][] overlap = new int[first.length() + 1][second.length() + 1];
@@ -158,8 +159,9 @@ public class JavaAlgorithms {
      */
 
     /**
-     * Time Complexity  O(n^(3/2))
-     * Resource Complexity O(1)
+     * Time Complexity  O(n^(3/2)) - так как первый цикл проходит по всем цифрам до входного числа,
+     * а вложенный в первый доходит до квадратного корня из входного числа
+     * Resource Complexity O(1) - так как количество дополнительных переменных не зависит от объёма входных данных
      */
     static public int calcPrimesNumber(int limit) {
         int res = 0;
@@ -214,8 +216,9 @@ public class JavaAlgorithms {
      */
 
     /**
-     * Time Complexity  O(n * m * wordsSize)
-     * Resource Complexity  O(n * m * wordsSize)
+     * Time Complexity  O(n * m * wordsSize) - так как в двух вложенных циклах мы проходим сначала по словам
+     * во входном словаре(wordSize), потом по числу рядов (n) и столбцов (m)
+     * Resource Complexity  O(n * m * wordsSize) - так как в методе может создаваться wordSize матриц размером m * n
      */
     static public Set<String> baldaSearcher(String inputName, Set<String> words) throws Exception {
         int lines = Files.readAllLines(Paths.get(inputName), StandardCharsets.UTF_8).size();
