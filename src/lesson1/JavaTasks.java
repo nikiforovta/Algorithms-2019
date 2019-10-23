@@ -113,7 +113,6 @@ public class JavaTasks {
         HashMap<String, LinkedList<String>> toSort = new HashMap<>();
         try (BufferedReader inp = new BufferedReader(new FileReader(new File(inputName)))) {
             String line;
-
             while ((line = inp.readLine()) != null) {
                 String[] info = line.split(" - ");
 
@@ -122,7 +121,6 @@ public class JavaTasks {
                 }
                 if (toSort.containsKey(info[1])) {
                     toSort.get(info[1]).add(info[0]);
-                    Collections.sort(toSort.get(info[1]));
                 } else {
                     toSort.put(info[1], new LinkedList<>(Collections.singletonList(info[0])));
                 }
@@ -133,13 +131,11 @@ public class JavaTasks {
         toSort.entrySet().stream().sorted(Map.Entry.comparingByKey(new AddressSortingComparator())).forEachOrdered(e -> {
             StringBuilder out = new StringBuilder();
             out.append(e.getKey()).append(" - ");
-            ArrayList<String> people = new ArrayList<>(e.getValue());
+            SortedSet<String> people = new TreeSet<>(e.getValue());
             for (String man : people) {
-                out.append(man);
-                if (!(people.get(people.size() - 1).equals(man))) {
-                    out.append(", ");
-                }
+                out.append(man).append(", ");
             }
+            out.delete(out.length() - 2, out.length());
             try {
                 writer.write(out + System.getProperty("line.separator"));
             } catch (IOException ex) {
