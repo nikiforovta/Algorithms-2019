@@ -1,7 +1,10 @@
 package lesson3
 
 import java.util.*
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 abstract class AbstractHeadTailTest {
     private lateinit var tree: SortedSet<Int>
@@ -52,6 +55,31 @@ abstract class AbstractHeadTailTest {
         for (i in 1..10)
             assertEquals(true, set.contains(i))
 
+        set = tree.headSet(1)
+        assertEquals(false, set.contains(1))
+        assertEquals(false, set.contains(2))
+        assertEquals(false, set.contains(3))
+        assertEquals(false, set.contains(4))
+        assertEquals(false, set.contains(5))
+        assertEquals(false, set.contains(6))
+        assertEquals(false, set.contains(7))
+        assertEquals(false, set.contains(8))
+        assertEquals(false, set.contains(9))
+        assertEquals(false, set.contains(10))
+
+        set = tree.headSet(0)
+        assertEquals(false, set.contains(1))
+        assertEquals(false, set.contains(2))
+        assertEquals(false, set.contains(3))
+        assertEquals(false, set.contains(4))
+        assertEquals(false, set.contains(5))
+        assertEquals(false, set.contains(6))
+        assertEquals(false, set.contains(7))
+        assertEquals(false, set.contains(8))
+        assertEquals(false, set.contains(9))
+        assertEquals(false, set.contains(10))
+
+
     }
 
     protected fun doTailSetTest() {
@@ -66,6 +94,31 @@ abstract class AbstractHeadTailTest {
         assertEquals(true, set.contains(8))
         assertEquals(true, set.contains(9))
         assertEquals(true, set.contains(10))
+
+        set = tree.tailSet(11)
+        assertEquals(false, set.contains(1))
+        assertEquals(false, set.contains(2))
+        assertEquals(false, set.contains(3))
+        assertEquals(false, set.contains(4))
+        assertEquals(false, set.contains(5))
+        assertEquals(false, set.contains(6))
+        assertEquals(false, set.contains(7))
+        assertEquals(false, set.contains(8))
+        assertEquals(false, set.contains(9))
+        assertEquals(false, set.contains(10))
+
+        set = tree.tailSet(0)
+        assertEquals(true, set.contains(1))
+        assertEquals(true, set.contains(2))
+        assertEquals(true, set.contains(3))
+        assertEquals(true, set.contains(4))
+        assertEquals(true, set.contains(5))
+        assertEquals(true, set.contains(6))
+        assertEquals(true, set.contains(7))
+        assertEquals(true, set.contains(8))
+        assertEquals(true, set.contains(9))
+        assertEquals(true, set.contains(10))
+
 
         set = tree.tailSet(-128)
         for (i in 1..10)
@@ -86,6 +139,16 @@ abstract class AbstractHeadTailTest {
         assertFailsWith<IllegalArgumentException> { set.add(8) }
         assertEquals(8, set.size)
         assertEquals(13, tree.size)
+        set.remove(1)
+        assertEquals(false, set.contains(1))
+        assertEquals(false, tree.contains(1))
+        assertEquals(7, set.size)
+        assertEquals(12, tree.size)
+        tree.remove(6)
+        assertEquals(false, set.contains(6))
+        assertEquals(false, tree.contains(6))
+        assertEquals(6, set.size)
+        assertEquals(11, tree.size)
     }
 
     protected fun doTailSetRelationTest() {
@@ -101,10 +164,20 @@ abstract class AbstractHeadTailTest {
         assertFailsWith<IllegalArgumentException> { set.add(-2) }
         assertEquals(9, set.size)
         assertEquals(13, tree.size)
+        set.remove(6)
+        assertEquals(false, set.contains(6))
+        assertEquals(false, tree.contains(6))
+        assertEquals(8, set.size)
+        assertEquals(12, tree.size)
+        tree.remove(7)
+        assertEquals(false, set.contains(7))
+        assertEquals(false, tree.contains(7))
+        assertEquals(7, set.size)
+        assertEquals(11, tree.size)
     }
 
     protected fun doSubSetTest() {
-        val smallSet: SortedSet<Int> = tree.subSet(3, 8)
+        var smallSet: SortedSet<Int> = tree.subSet(3, 8)
         assertEquals(false, smallSet.contains(1))
         assertEquals(false, smallSet.contains(2))
         assertEquals(true, smallSet.contains(3))
@@ -116,6 +189,7 @@ abstract class AbstractHeadTailTest {
         assertEquals(false, smallSet.contains(9))
         assertEquals(false, smallSet.contains(10))
 
+        assertFailsWith<IllegalArgumentException> { smallSet = tree.subSet(250, 10) }
         assertFailsWith<IllegalArgumentException> { smallSet.add(2) }
         assertFailsWith<IllegalArgumentException> { smallSet.add(9) }
 
@@ -134,7 +208,7 @@ abstract class AbstractHeadTailTest {
     }
 
     protected fun doSubSetRelationTest() {
-        val set: SortedSet<Int> = tree.subSet(2, 15)
+        var set: SortedSet<Int> = tree.subSet(2, 15)
         assertEquals(9, set.size)
         assertEquals(10, tree.size)
         tree.add(11)
@@ -149,6 +223,15 @@ abstract class AbstractHeadTailTest {
         assertFailsWith<IllegalArgumentException> { set.add(20) }
         assertEquals(11, set.size)
         assertEquals(14, tree.size)
+        set.remove(3)
+        assertEquals(false, set.contains(3))
+        assertEquals(false, tree.contains(3))
+        assertEquals(10, set.size)
+        assertEquals(13, tree.size)
+        tree.remove(9)
+        assertEquals(false, set.contains(9))
+        assertEquals(false, tree.contains(9))
+        assertEquals(9, set.size)
+        assertEquals(12, tree.size)
     }
-
 }

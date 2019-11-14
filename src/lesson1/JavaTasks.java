@@ -110,7 +110,7 @@ public class JavaTasks {
      * количество элементов которого равно размеру входных данных
      */
     static public void sortAddresses(String inputName, String outputName) throws Exception {
-        HashMap<String, LinkedList<String>> toSort = new HashMap<>();
+        HashMap<String, TreeSet<String>> toSort = new HashMap<>();
         try (BufferedReader inp = new BufferedReader(new FileReader(new File(inputName)))) {
             String line;
             while ((line = inp.readLine()) != null) {
@@ -122,22 +122,18 @@ public class JavaTasks {
                 if (toSort.containsKey(info[1])) {
                     toSort.get(info[1]).add(info[0]);
                 } else {
-                    toSort.put(info[1], new LinkedList<>(Collections.singletonList(info[0])));
+                    TreeSet<String> first = new TreeSet<>();
+                    first.add(info[0]);
+                    toSort.put(info[1], first);
                 }
             }
         }
 
         FileWriter writer = new FileWriter(outputName);
         toSort.entrySet().stream().sorted(Map.Entry.comparingByKey(new AddressSortingComparator())).forEachOrdered(e -> {
-            StringBuilder out = new StringBuilder();
-            out.append(e.getKey()).append(" - ");
-            SortedSet<String> people = new TreeSet<>(e.getValue());
-            for (String man : people) {
-                out.append(man).append(", ");
-            }
-            out.delete(out.length() - 2, out.length());
+            String out = String.join(", ", e.getValue());
             try {
-                writer.write(out + System.getProperty("line.separator"));
+                writer.write(e.getKey() + " - " + out + System.getProperty("line.separator"));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

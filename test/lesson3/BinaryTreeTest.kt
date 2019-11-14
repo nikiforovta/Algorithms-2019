@@ -1,11 +1,8 @@
 package lesson3
 
 import org.junit.jupiter.api.Tag
-import kotlin.test.Test
 import java.util.*
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class BinaryTreeTest {
     private fun testAdd(create: () -> CheckableSortedSet<Int>) {
@@ -84,16 +81,30 @@ class BinaryTreeTest {
         }
     }
 
+    private fun additionalTestRemove(create: () -> CheckableSortedSet<Int>) {
+        val binarySet = create()
+        assertFalse(binarySet.remove(null))
+        val elements = setOf(24, 324534, -13, 25, 0)
+        for (element in elements) {
+            binarySet += element
+        }
+        assertFalse(binarySet.remove(null))
+        assertTrue(binarySet.remove(-13))
+        assertFalse(binarySet.remove(324535))
+    }
+
     @Test
     @Tag("Normal")
     fun testRemoveKotlin() {
         testRemove { createKotlinTree() }
+        additionalTestRemove { createKotlinTree() }
     }
 
     @Test
     @Tag("Normal")
     fun testRemoveJava() {
         testRemove { createJavaTree() }
+        additionalTestRemove { createJavaTree() }
     }
 
     private fun testIterator(create: () -> CheckableSortedSet<Int>) {
@@ -129,6 +140,23 @@ class BinaryTreeTest {
         }
     }
 
+    private fun additionalTestIterator(create: () -> CheckableSortedSet<Int>) {
+        val binarySet = create()
+        val elements = mutableSetOf(null, null)
+        for (i in 0..Integer.MAX_VALUE) {
+            elements += null
+        }
+        for (element in elements) {
+            binarySet += element
+        }
+        val nullIterator = binarySet.iterator()
+        assertTrue(nullIterator.hasNext())
+        while (nullIterator.hasNext()) {
+            assertNull(nullIterator.next())
+        }
+        assertFalse(nullIterator.hasNext())
+    }
+
     @Test
     @Tag("Normal")
     fun testIteratorKotlin() {
@@ -139,6 +167,7 @@ class BinaryTreeTest {
     @Tag("Normal")
     fun testIteratorJava() {
         testIterator { createJavaTree() }
+        additionalTestIterator { createJavaTree() }
     }
 
     private fun testIteratorRemove(create: () -> CheckableSortedSet<Int>) {
@@ -186,6 +215,29 @@ class BinaryTreeTest {
         }
     }
 
+    private fun additionalTestIteratorRemove(create: () -> CheckableSortedSet<Int>) {
+        val binarySet = create()
+        val originalSize = binarySet.size
+        assertEquals(originalSize, binarySet.size)
+        val elements = setOf(24, 324534, -13, 25, 0)
+        for (element in elements) {
+            binarySet += element
+        }
+        val iterator = binarySet.iterator()
+        iterator.remove()
+        iterator.next()
+        iterator.remove()
+        iterator.next()
+        iterator.remove()
+        iterator.next()
+        iterator.remove()
+        iterator.next()
+        iterator.remove()
+        iterator.next()
+        iterator.remove()
+        assertEquals(originalSize, binarySet.size)
+    }
+
     @Test
     @Tag("Hard")
     fun testIteratorRemoveKotlin() {
@@ -196,5 +248,6 @@ class BinaryTreeTest {
     @Tag("Hard")
     fun testIteratorRemoveJava() {
         testIteratorRemove { createJavaTree() }
+        additionalTestIteratorRemove { createJavaTree() }
     }
 }
