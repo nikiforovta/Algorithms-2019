@@ -22,9 +22,33 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
 
     private Node<T> root = null;
 
-    private NewSuperSet headSet;
-    private NewSuperSet tailSet;
-    private NewSuperSet subSet;
+    private ArrayList<NewSuperSet> listOfHeadSets = new ArrayList<>();
+    private ArrayList<NewSuperSet> listOfTailSets = new ArrayList<>();
+    private ArrayList<NewSuperSet> listOfSubSets = new ArrayList<>();
+
+    public NewSuperSet getHeadSet(int index) {
+        return listOfHeadSets.get(index);
+    }
+
+    public NewSuperSet getTailSet(int index) {
+        return listOfTailSets.get(index);
+    }
+
+    public NewSuperSet getSubSet(int index) {
+        return listOfSubSets.get(index);
+    }
+
+    public NewSuperSet setHeadSet(int index, NewSuperSet newHead) {
+        return listOfHeadSets.set(index, newHead);
+    }
+
+    public NewSuperSet setTailSet(int index, NewSuperSet newTail) {
+        return listOfTailSets.set(index, newTail);
+    }
+
+    public NewSuperSet setSubSet(int index, NewSuperSet newSub) {
+        return listOfSubSets.set(index, newSub);
+    }
 
     private int size = 0;
 
@@ -51,14 +75,28 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     }
 
     private void updateSets() {
-        if (tailSet != null) {
-            tailSet(tailSet.getFromElement());
+        for (NewSuperSet k : listOfSubSets) {
+            for (T value : this) {
+                if (value.compareTo(k.getToElement()) < 0 && value.compareTo(k.getFromElement()) >= 0) {
+                    k.add(value);
+                }
+            }
         }
-        if (headSet != null) {
-            headSet(headSet.getToElement());
+        for (NewSuperSet k : listOfHeadSets) {
+            for (T value : this) {
+                if (value.compareTo(k.getToElement()) < 0) {
+                    k.add(value);
+                } else {
+                    break;
+                }
+            }
         }
-        if (subSet != null) {
-            subSet(subSet.getFromElement(), subSet.getToElement());
+        for (NewSuperSet k : listOfTailSets) {
+            for (T value : this) {
+                if (value.compareTo(k.getFromElement()) >= 0) {
+                    k.add(value);
+                }
+            }
         }
     }
 
@@ -87,7 +125,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
      * Средняя
      */
     /**
-     * Time complexity: O(h)
+     * Time complexity: O(h) + O(max(listOfHeadSets.size, listOfSubSets.size, listOfTailSets.size))
      * Space complexity: O(1)
      */
     @Override
@@ -96,8 +134,16 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
             return false;
         }
         root = recursiveRemove(root, new Node<>((T) o));
+        for (NewSuperSet k : listOfHeadSets) {
+            k.remove(o);
+        }
+        for (NewSuperSet k : listOfSubSets) {
+            k.remove(o);
+        }
+        for (NewSuperSet k : listOfTailSets) {
+            k.remove(o);
+        }
         size--;
-        updateSets();
         return true;
     }
 
@@ -218,7 +264,7 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
          * Сложная
          */
         /**
-         * Time complexity: O(h)
+         * Time complexity: O(h) + O(max(listOfHeadSets.size, listOfSubSets.size, listOfTailSets.size))
          * Space complexity: O(1)
          */
         @Override
@@ -260,14 +306,6 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
             return toElement;
         }
 
-        void setFromElement(T fromElement) {
-            this.fromElement = fromElement;
-        }
-
-        void setToElement(T toElement) {
-            this.toElement = toElement;
-        }
-
         NewSuperSet(T fromElement, T toElement) {
             this.fromElement = fromElement;
             this.toElement = toElement;
@@ -283,7 +321,9 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
                 if (value.compareTo(fromElement) < 0) {
                     throw new IllegalArgumentException();
                 } else {
-                    BinaryTree.this.add(value);
+                    if (!BinaryTree.this.contains(value)) {
+                        BinaryTree.this.add(value);
+                    }
                     super.add(value);
                     return true;
                 }
@@ -292,13 +332,17 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
                 if (value.compareTo(toElement) >= 0) {
                     throw new IllegalArgumentException();
                 } else {
-                    BinaryTree.this.add(value);
+                    if (!BinaryTree.this.contains(value)) {
+                        BinaryTree.this.add(value);
+                    }
                     super.add(value);
                     return true;
                 }
             }
             if (value.compareTo(toElement) < 0 && value.compareTo(fromElement) >= 0) {
-                BinaryTree.this.add(value);
+                if (!BinaryTree.this.contains(value)) {
+                    BinaryTree.this.add(value);
+                }
                 super.add(value);
             } else {
                 throw new IllegalArgumentException();
@@ -308,8 +352,12 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
 
         @Override
         public boolean remove(Object o) {
-            BinaryTree.this.remove(o);
-            return super.remove(o);
+            T value = (T) o;
+            if (value == null) {
+                return false;
+            }
+            BinaryTree.this.remove(value);
+            return super.remove(value);
         }
     }
 
@@ -327,21 +375,9 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         if (fromElement.compareTo(toElement) >= 0) {
             throw new IllegalArgumentException();
         }
-        if (subSet == null) {
-            subSet = new NewSuperSet(fromElement, toElement);
-        }
-        if (subSet.getToElement() != null && subSet.getToElement().compareTo(toElement) != 0) {
-            subSet.setToElement(toElement);
-        }
-        if (subSet.getFromElement() != null && subSet.getFromElement().compareTo(fromElement) != 0) {
-            subSet.setFromElement(fromElement);
-        }
-        subSet.clear();
-        for (T value : this) {
-            if (value.compareTo(toElement) < 0 && value.compareTo(fromElement) >= 0) {
-                subSet.add(value);
-            }
-        }
+        NewSuperSet subSet = new NewSuperSet(fromElement, toElement);
+        listOfSubSets.add(subSet);
+        updateSets();
         return subSet;
     }
 
@@ -356,20 +392,9 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     @NotNull
     @Override
     public SortedSet<T> headSet(T toElement) {
-        if (headSet == null) {
-            headSet = new NewSuperSet(null, toElement);
-        }
-        if (headSet.getToElement() != null && headSet.getToElement().compareTo(toElement) != 0) {
-            headSet.setToElement(toElement);
-        }
-        headSet.clear();
-        for (T value : this) {
-            if (value.compareTo(toElement) < 0) {
-                headSet.add(value);
-            } else {
-                break;
-            }
-        }
+        NewSuperSet headSet = new NewSuperSet(null, toElement);
+        listOfHeadSets.add(headSet);
+        updateSets();
         return headSet;
     }
 
@@ -384,18 +409,9 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     @NotNull
     @Override
     public SortedSet<T> tailSet(T fromElement) {
-        if (tailSet == null) {
-            tailSet = new NewSuperSet(fromElement, null);
-        }
-        if (tailSet.getFromElement() != null && tailSet.getFromElement().compareTo(fromElement) != 0) {
-            tailSet.setFromElement(fromElement);
-        }
-        tailSet.clear();
-        for (T value : this) {
-            if (value.compareTo(fromElement) >= 0) {
-                tailSet.add(value);
-            }
-        }
+        NewSuperSet tailSet = new NewSuperSet(fromElement, null);
+        listOfTailSets.add(tailSet);
+        updateSets();
         return tailSet;
     }
 
