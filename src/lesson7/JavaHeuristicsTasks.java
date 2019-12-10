@@ -22,9 +22,15 @@ public class JavaHeuristicsTasks {
      * <p>
      * Используйте parameters для передачи дополнительных параметров алгоритма
      * (не забудьте изменить тесты так, чтобы они передавали эти параметры)
+     * <p>
+     * Time Complexity: O(k * n * m)
+     * Memory Complexity: O(n)
+     * k - GENERATION
+     * n - POPULATION
+     * m - items.size
      */
 
-    static final int POPULATION = 100;
+    static final int POPULATION = 10000;
     static final int GENERATIONS = 1500;
     static Chromosome[] population = new Chromosome[POPULATION];
 
@@ -36,7 +42,7 @@ public class JavaHeuristicsTasks {
         }
         for (int i = 0; i < GENERATIONS; i++) {
             for (int j = 0; j < POPULATION; j++) {
-                population[j].setFitness(population[j].calculateFitness(items, load));
+                population[j].calculateFitness(items, load);
             }
             population = createNextGeneration(genesCount, i + 1);
         }
@@ -49,17 +55,13 @@ public class JavaHeuristicsTasks {
         Random random = new Random();
         nextGeneration[0] = findBestChromosome();
         for (int i = 1; i < POPULATION; i++) {
-            if (population[i].getFitness() == 0) {
-                Chromosome firstParent = population[random.nextInt(POPULATION)];
-                Chromosome secondParent = population[random.nextInt(POPULATION)];
-                while (secondParent == firstParent) {
-                    secondParent = population[random.nextInt(POPULATION)];
-                }
-                Chromosome result = firstParent.crossover(secondParent, genesCount);
-                nextGeneration[i] = result.mutation(genesCount, generation);
-            } else {
-                nextGeneration[i] = population[i];
+            Chromosome firstParent = population[random.nextInt(POPULATION)];
+            Chromosome secondParent = population[random.nextInt(POPULATION)];
+            while (secondParent == firstParent) {
+                secondParent = population[random.nextInt(POPULATION)];
             }
+            Chromosome offspring = firstParent.crossover(secondParent, genesCount);
+            nextGeneration[i] = offspring.mutation(genesCount, generation);
         }
         return nextGeneration;
     }

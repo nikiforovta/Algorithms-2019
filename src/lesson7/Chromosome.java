@@ -49,12 +49,13 @@ public class Chromosome {
         return new Item(costSum, weightSum);
     }
 
-    public int calculateFitness(List<Item> items, int load) {
+    public void calculateFitness(List<Item> items, int load) {
         Item filledKnapsack = getFilledKnapsack(items);
         if (filledKnapsack.getWeight() > load) {
-            return 0;
+            this.setFitness(0);
+            return;
         }
-        return filledKnapsack.getCost();
+        this.setFitness(filledKnapsack.getCost());
     }
 
     @Override

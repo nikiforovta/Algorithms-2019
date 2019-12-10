@@ -1,7 +1,6 @@
 package lesson6;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ public class JavaDynamicTasks {
     /**
      * Наибольшая общая подпоследовательность.
      * Средняя
-     *
+     * <p>
      * Дано две строки, например "nematode knowledge" и "empty bottle".
      * Найти их самую длинную общую подпоследовательность -- в примере это "emt ole".
      * Подпоследовательность отличается от подстроки тем, что её символы не обязаны идти подряд
@@ -21,8 +20,8 @@ public class JavaDynamicTasks {
      * Если общей подпоследовательности нет, вернуть пустую строку.
      * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
      * При сравнении подстрок, регистр символов *имеет* значение.
-     *
-     *
+     * <p>
+     * <p>
      * Time Complexity: O(mn)
      * Memory Complexity: O(mn)
      * m - длина первой строки
@@ -65,7 +64,7 @@ public class JavaDynamicTasks {
     /**
      * Наибольшая возрастающая подпоследовательность
      * Сложная
-     *
+     * <p>
      * Дан список целых чисел, например, [2 8 5 9 12 6].
      * Найти в нём самую длинную возрастающую подпоследовательность.
      * Элементы подпоследовательности не обязаны идти подряд,
@@ -73,8 +72,8 @@ public class JavaDynamicTasks {
      * Если самых длинных возрастающих подпоследовательностей несколько (как в примере),
      * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
      * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
-     *
-     *
+     * <p>
+     * <p>
      * Time Complexity: O(n^2)
      * Memory Complexity: O(n)
      * n - длина списка
@@ -119,45 +118,38 @@ public class JavaDynamicTasks {
     /**
      * Самый короткий маршрут на прямоугольном поле.
      * Средняя
-     *
+     * <p>
      * В файле с именем inputName задано прямоугольное поле:
-     *
+     * <p>
      * 0 2 3 2 4 1
      * 1 5 3 4 6 2
      * 2 6 2 5 1 3
      * 1 4 3 2 6 2
      * 4 2 3 1 5 0
-     *
+     * <p>
      * Можно совершать шаги длиной в одну клетку вправо, вниз или по диагонали вправо-вниз.
      * В каждой клетке записано некоторое натуральное число или нуль.
      * Необходимо попасть из верхней левой клетки в правую нижнюю.
      * Вес маршрута вычисляется как сумма чисел со всех посещенных клеток.
      * Необходимо найти маршрут с минимальным весом и вернуть этот минимальный вес.
-     *
+     * <p>
      * Здесь ответ 2 + 3 + 4 + 1 + 2 = 12
-     *
-     *
+     * <p>
+     * <p>
      * Time Complexity: O(mn)
      * Memory Complexity: O(mn)
      * m - ширина поля
      * n - длина поля
      */
-    public static int shortestPathOnField(String inputName) throws IOException {
+    public static int shortestPathOnField(String inputName) {
         List<String> input = new ArrayList<>();
-        FileReader file;
-        try {
-            file = new FileReader(inputName);
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException();
-        }
-        BufferedReader reader = new BufferedReader(file);
-        try {
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputName))) {
             String inputString;
             while ((inputString = reader.readLine()) != null) {
                 input.add(inputString);
             }
         } catch (IOException e) {
-            throw new IOException();
+            e.printStackTrace();
         }
         int height = input.size();
         int width = input.get(0).split(" ").length;
@@ -169,11 +161,7 @@ public class JavaDynamicTasks {
                 throw new IllegalArgumentException();
             }
             for (int j = 0; j < line.length; j++) {
-                try {
-                    field[i][j] = Integer.parseInt(line[j]);
-                } catch (NumberFormatException e) {
-                    throw new NumberFormatException();
-                }
+                field[i][j] = Integer.parseInt(line[j]);
             }
         }
 

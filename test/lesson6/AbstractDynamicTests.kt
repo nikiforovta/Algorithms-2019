@@ -1,9 +1,8 @@
 package lesson6
 
 import java.io.FileNotFoundException
-import java.io.IOException
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertFailsWith
 
 abstract class AbstractDynamicTests {
     fun longestCommonSubSequence(longestCommonSubSequence: (String, String) -> String) {
@@ -81,30 +80,9 @@ abstract class AbstractDynamicTests {
         assertEquals(28, shortestPathOnField("input/field_in4.txt"))
         assertEquals(222, shortestPathOnField("input/field_in5.txt"))
         assertEquals(15, shortestPathOnField("input/field_in6.txt"))
-
-        try {
-            shortestPathOnField("input/field_does_not_exist.txt")
-        } catch (e: FileNotFoundException) {
-            assertTrue(true)
-        }
-
-        try {
-            shortestPathOnField("input/field_in7.txt")
-        } catch (e: NumberFormatException) {
-            assertTrue(true)
-        }
-
-        try {
-            shortestPathOnField("input/field_in8.txt")
-        } catch (e: IllegalArgumentException) {
-            assertTrue(true)
-        }
-
-        try {
-            shortestPathOnField("input/field_in9.txt")
-        } catch (e: IllegalArgumentException) {
-            assertTrue(true)
-        }
+        assertFailsWith<IndexOutOfBoundsException> { shortestPathOnField("input/field_does_not_exist.txt") }
+        assertFailsWith<NumberFormatException> { shortestPathOnField("input/field_in7.txt") }
+        assertFailsWith<IllegalArgumentException> { shortestPathOnField("input/field_in8.txt") }
+        assertFailsWith<IllegalArgumentException> { shortestPathOnField("input/field_in9.txt") }
     }
-
 }
